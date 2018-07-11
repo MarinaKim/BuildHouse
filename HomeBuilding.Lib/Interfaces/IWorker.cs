@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace HomeBuilding.Lib.Interfaces
 {
     public enum Spec { kam, plot, other}
-    interface IWorker
+   public interface IWorker
     {
         bool IsTeam { get; set; }
         int Age { get; set; }

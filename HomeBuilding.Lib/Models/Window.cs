@@ -9,8 +9,10 @@ namespace HomeBuilding.Lib.Models
 {
     namespace HomeBuilding.Lib.Models.Home
     {
-        class Window : IPart
+       public class Window : IPart
         {
+            public int WorkId { get; set; }
+
             public double SizeX { get; set; }
             public double SizeY { get; set; }
 
@@ -18,7 +20,26 @@ namespace HomeBuilding.Lib.Models
             public string Company { get; set; }
 
             public int Count { get; set; }
-            public DateTime DateFinish { get; set; }
+            private DateTime DateFinish_;
+
+            public DateTime DateFinish
+            {
+                get
+                {
+                    return DateFinish_;
+                }
+
+                set
+                {
+                    DateFinish_ = value;
+                    if (DateStart == null || DateStart == DateTime.MinValue)
+                    {
+                        DateStart = value;
+                    }
+                    WorkOut =
+                        TimeSpan.FromHours((DateFinish_ - DateStart).TotalHours);
+                }
+            }
 
             public DateTime DateStart { get; set; }
 
@@ -27,6 +48,9 @@ namespace HomeBuilding.Lib.Models
             public double Price { get; set; }
 
             public int Sort { get; set; } = 3;
+            public IWorker Worker { get; set; }
+            public TimeSpan WorkOut { get; set; }
+
         }
     }
 }

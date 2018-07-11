@@ -9,7 +9,7 @@ namespace HomeBuilding.Lib.Models
 {
     namespace HomeBuilding.Lib.Models.Team
     {
-        class TeamLeader : IWorker
+      public  class TeamLeader : IWorker
         {
             public bool IsTeam { get; set; } = true;
             public int Age { get; set; }
@@ -40,6 +40,44 @@ namespace HomeBuilding.Lib.Models
                     return (Worker)Brigada.ElementAt(workerId);
                 }
             }
+
+            public void GetReport(List<IPart> works)
+            {
+                foreach (IPart item in works)
+                {
+                    if (item.DateStart != DateTime.MinValue
+                        && item.DateFinish != DateTime.MinValue)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("{0}\n{1} - {2}\n{3}days\ntotal time:{4}\nWorker:{5}\nSalary:{6}",
+                            item.WorkId,
+                            item.DateStart, item.DateFinish,
+                            item.WorkOut.TotalDays,
+                            item.WorkOut.TotalHours,
+                            item.Worker.FIO,
+                            item.WorkOut.TotalHours * item.Worker.SalaryInHour);
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.WriteLine("------------------------------------");
+                    }
+                    else if (item.DateStart != null && item.DateFinish == null)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("{0}\n{1}\nWorker:{2}",
+                            item.WorkId,
+                            item.DateStart, item.Worker.FIO);
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.WriteLine("------------------------------------");
+                    }
+                    //else
+                    //{
+                    //    Console.ForegroundColor = ConsoleColor.Red;
+                    //    Console.WriteLine("{0}",item.WorkId);
+                    //    Console.ForegroundColor = ConsoleColor.Gray;
+                    //    Console.WriteLine("------------------------------------");
+                    //}
+                }
+            }
+
         }
     }
 }

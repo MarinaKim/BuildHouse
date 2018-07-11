@@ -10,7 +10,7 @@ using HomeBuilding.Lib.Models.HomeBuilding.Lib.Models.Team;
 
 namespace HomeBuilding.Lib.Models
 {
-    class Project
+   public class Project
     {
         public List<IPart> ListWork = new List<IPart>();
         public List<IWorker> Workers = new List<IWorker>();
@@ -26,10 +26,11 @@ namespace HomeBuilding.Lib.Models
             // basement.Price = rnd.Next();
 
             int c = rnd.Next(1, 3);
-
+            int id = 0;
             for (int i = 0; i < c; i++)
             {
                 Basement basement = new Basement();
+                basement.WorkId = id++;
                 basement.Company = "Asar";
                 basement.Count = 1;
                 basement.Material = "-";
@@ -40,6 +41,7 @@ namespace HomeBuilding.Lib.Models
             for (int i = 0; i < c * 4; i++)
             {
                 Walls wall = new Walls();
+                wall.WorkId = id++;
                 wall.Company = "-";
                 wall.Count = 1;
                 wall.Material = " kirpish";
@@ -53,6 +55,8 @@ namespace HomeBuilding.Lib.Models
             for (int i = 0; i < rnd.Next(2, c * 6); i++)
             {
                 Window window = new Window();
+                window.WorkId = id++;
+
                 window.Company = "--";
                 window.Count = 1;
                 window.Material = "plstik";
@@ -65,6 +69,8 @@ namespace HomeBuilding.Lib.Models
             for (int i = 0; i < c * 4; i++)
             {
                 Door door = new Door();
+                door.WorkId = id++;
+
                 door.Material = "derevo";
                 door.Company = "---";
                 door.Count = 1;
@@ -74,7 +80,7 @@ namespace HomeBuilding.Lib.Models
                 ListWork.Add(door);
             }
 
-            ListWork.Add(new Roof() { Count = 1, Price = rnd.Next() });
+            ListWork.Add(new Roof() { WorkId = id, Count = 1, Price = rnd.Next() });
 
         }
 
@@ -114,33 +120,45 @@ namespace HomeBuilding.Lib.Models
         {
             TeamLeader leader = (TeamLeader)Workers
                 .FirstOrDefault(f => f.IsTeam == true);
-           
+            DateTime stw = DateTime.Now;
+            DateTime fw = stw;
             for (int i = 0; i < ListWork.Count; i++)
             {
-               Worker w= leader[leader.GetWorkerId()];
-
-                IPart p = GetWork();
-                if (p != null)
+                Worker w = leader[leader.GetWorkerId()];
+                if ((fw - stw).TotalDays > 20)
                 {
-                    ListWork.IndexOf(p)
-                    
+                    leader.GetReport(ListWork);
+                    fw = stw;
                 }
-            }
+                else
+                {
+                    IPart p = GetWork();
+                    if (p != null)
+                    {
+                        int workOut = rnd.Next(1, 30);
+                        ListWork[p.WorkId].DateStart = fw;
+                        ListWork[p.WorkId].DateFinish =
+                            ListWork[p.WorkId].DateStart
+                            .AddDays(workOut);
 
-            
+                        fw = fw.AddDays(workOut);
+
+                        ListWork[p.WorkId].Worker = w;
+                        Console.WriteLine("done");
+                    }
+                }
+            }        
         }
 
         private IPart GetWork()
         {
-            ListWork = ListWork
-               .OrderBy(o => o.Sort)
-               .ToList();
+            //ListWork = ListWork
+            //   .OrderBy(o => o.Sort)
+            //   .ToList();
 
-            IPart p = (IPart)ListWork
-                .Where(w => w.DateStart == null)
-                .Take(1);
-
-            return p;
+            return ListWork
+               .Where(w => w.DateStart == DateTime.MinValue)
+               .FirstOrDefault();
         }
     }
 }
